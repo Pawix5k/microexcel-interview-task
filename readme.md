@@ -5,6 +5,8 @@
 Implement a program that simulates MS Excel.
 The script must accept and output headerless `.csv` file.
 
+Program should be written in Python and use no external libraries.
+
 The program must be able to perform basic arithmetic operations (addition, subtraction, multiplication, division) and comparison operations (less than, larger than, equals) in formulas and evaluate them in correct order.
 
 The program should be able to handle string, number and boolean primitives.
