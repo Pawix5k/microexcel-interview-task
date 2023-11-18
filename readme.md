@@ -55,3 +55,88 @@ Hello,World,HelloWorld
 5,3,Foo
 1,FALSE,TRUE
 ```
+
+## Solution
+
+My program takes following steps when evaluating final state of input sheet.
+
+### I. tokenization
+
+In case of string, number or boolean initial values the actual parsing step involving tokenization is skipped. In case of formulas (cells starting with `=`) `Tokenizer` divides the input into individual tokens. Possible token type values:
+```
+EOF
+EQUALS
+PLUS
+MINUS
+ASTERISK
+SLASH
+LT
+GT
+EQ
+SEMICOLON
+LEFT_PAREN
+RIGHT_PAREN
+STRING
+NUMBER
+BOOLEAN
+REFERENCE
+ERROR
+FUNCTION
+```
+Most of them also includes string literal.
+
+### II. Parsing
+
+Next step is assembling an Abstract Syntax Tree from tokens. My `Parses` uses recursive descent to create individual Nodes and build an AST in correct order of operations.
+
+Nodes themselves (in `_abstract_syntax_tree.py` module) are made up from multiple different classes, all of them implementing `__str__` and `__eq__` dunder methods for easier stringification and testing for equality.
+
+All the classes making up Node:
+```
+NodeString
+NodeNumber
+NodeBoolean
+NodeReference
+NodeFunction
+NodePrefix
+NodeInfix
+NodeEmpty
+NodeError
+```
+
+### III. Evaluation
+
+Parsed sheet is 2D list of leafs/trees made up of nodes. Because of possible references, the structure is a graph.
+
+Given that fact, when evaluating individual nodes, depth first search is done. Track of visited cells is kept for cycle detection and resolving it as an error.
+
+When reference is evaluated, result is saved directly to the corrresponding cell in `Sheet` to avoid computing the same tree multiple times.
+
+
+## Usage
+
+### Running the program
+
+From root folder:
+```
+python main.py <input_path> <output_path>
+```
+or
+```
+python3 main.py <input_path> <output_path>
+```
+for example:
+```
+python main.py example_input\input3.csv out.csv
+```
+
+### Running test
+
+From root folder:
+```
+python -m unittest
+```
+or
+```
+python3 -m unittest
+```
