@@ -24,39 +24,102 @@ SETTLED_NODES = (
 )
 
 
-def prefix_sub(node: Node):
+def prefix_sub_handler(node: Node):
     if isinstance(node, ImplementsToNumber):
         return NodeNumber(-node.to_number())
     return NodeError()
 
 
 PREFIX_HANDLERS = {
-    "-": prefix_sub,
+    "-": prefix_sub_handler,
 }
 
 
-def sub(left, right):
+def add_handler(left, right):
+    if isinstance(left, ImplementsToNumber) and isinstance(right, ImplementsToNumber):
+        return NodeNumber(left.to_number() + right.to_number())
+    return NodeError()
+
+
+def sub_handler(left, right):
     if isinstance(left, ImplementsToNumber) and isinstance(right, ImplementsToNumber):
         return NodeNumber(left.to_number() - right.to_number())
     return NodeError()
 
 
+def mul_handler(left, right):
+    if isinstance(left, ImplementsToNumber) and isinstance(right, ImplementsToNumber):
+        return NodeNumber(left.to_number() * right.to_number())
+    return NodeError()
+
+
+def div_handler(left, right):
+    if isinstance(left, ImplementsToNumber) and isinstance(right, ImplementsToNumber):
+        if right.to_number() == 0:
+            return NodeError()
+        return NodeNumber(left.to_number() * right.to_number())
+    return NodeError()
+
+
+def div_handler(left, right):
+    if isinstance(left, ImplementsToNumber) and isinstance(right, ImplementsToNumber):
+        if right.to_number() == 0:
+            return NodeError()
+        return NodeNumber(left.to_number() * right.to_number())
+    return NodeError()
+
+
+def lt_handler(left, right):
+    if isinstance(left, ImplementsToNumber) and isinstance(right, ImplementsToNumber):
+        if left.to_number() < right.to_number():
+            return NodeBoolean(True)
+        return NodeBoolean(False)
+    return NodeError()
+
+
+def gt_handler(left, right):
+    if isinstance(left, ImplementsToNumber) and isinstance(right, ImplementsToNumber):
+        if left.to_number() > right.to_number():
+            return NodeBoolean(True)
+        return NodeBoolean(False)
+    return NodeError()
+
+
+def eq_handler(left, right):
+    return NodeBoolean(left == right)
+
+
 INFIX_HANDLERS = {
-    "-": sub,
+    "+": add_handler,
+    "-": sub_handler,
+    "*": mul_handler,
+    "/": div_handler,
+    "<": lt_handler,
+    ">": gt_handler,
+    "=": eq_handler,
 }
 
 
-def fn_concatenate(args):
+def fn_concatenate_handler(args):
     strs = []
     for arg in args:
         if not isinstance(arg, ImplementsToString):
             return NodeError()
         strs.append(arg.to_string())
-    return "".join(strs)
+    return NodeString("".join(strs))
+
+
+def fn_if_handler(args):
+    if len(args) == 3 and isinstance(args[0], ImplementsToBoolean):
+        if args[0].to_boolean():
+            return args[1]
+        return args[2]
+    return NodeError()
 
 
 FUNCTION_HANDLERS = {
-    "CONCATENATE": fn_concatenate,
+    "CONCATENATE": fn_concatenate_handler,
+    "IF": fn_if_handler,
 }
 
 
@@ -77,6 +140,16 @@ class Sheet:
         if cell.startswith("="):
             node = Parser(cell[1:]).parse_cell()
             return node
+        try:
+            return NodeNumber(int(cell))
+        except ValueError:
+            try:
+                return NodeNumber(float(cell))
+            except ValueError:
+                return NodeString(cell)
+
+    def get_strings(self):
+        return [[str(cell) for cell in row] for row in self._cells]
 
     def evaluate(self):
         for row in range(len(self._cells)):
@@ -89,9 +162,6 @@ class Sheet:
         if ((row, col)) in visited:
             return NodeError()
         node = self._cells[row][col]
-        if isinstance(node, SETTLED_NODES):
-            return node
-
         visited.add((row, col))
         node = self._evaluate_node(node, visited)
         self._cells[row][col] = node
@@ -120,5 +190,5 @@ class Sheet:
             )
         if isinstance(node, NodeFunction):
             return FUNCTION_HANDLERS[node.name](
-                (self._evaluate_node(arg, visited) for arg in node.args)
+                [self._evaluate_node(arg, visited) for arg in node.args]
             )
