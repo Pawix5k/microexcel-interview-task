@@ -92,3 +92,11 @@ class TestTokenizer(unittest.TestCase):
                 "*", NodePrefix("-", NodeNumber(2)), NodePrefix("-", NodeNumber(3.4))
             )
             self.assertEqual(expected_tree, parser.parse_cell())
+
+        with self.subTest(i=11):
+            input_ = 'CONCATENATE("DD";"AA")'
+            parser = Parser(input_)
+            expected_tree = NodeFunction(
+                "CONCATENATE", [NodeString("DD"), NodeString("AA")]
+            )
+            self.assertEqual(expected_tree, parser.parse_cell())
