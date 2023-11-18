@@ -99,6 +99,25 @@ class NodeEmpty:
         return isinstance(other, NodeEmpty)
 
 
+class NodePrefix:
+    def __init__(self, operator: str, expression: Node):
+        self.operator = operator
+        self.expression = expression
+
+    def __str__(self) -> str:
+        return f"({self.operator}{str(self.expression)})"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}('{self.operator}', {repr(self.expression)})"
+
+    def __eq__(self, other):
+        if isinstance(other, NodePrefix):
+            return (
+                self.operator == other.operator and self.expression == other.expression
+            )
+        return False
+
+
 class NodeInfix:
     def __init__(self, operator: str, left: Node, right: Node = NodeEmpty()):
         self.operator = operator
@@ -138,6 +157,7 @@ Node = (
     | NodeBoolean
     | NodeReference
     | NodeFunction
+    | NodePrefix
     | NodeInfix
     | NodeEmpty
     | NodeError

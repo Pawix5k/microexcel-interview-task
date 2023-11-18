@@ -5,6 +5,7 @@ from _abstract_syntax_tree import (
     NodeFunction,
     NodeInfix,
     NodeNumber,
+    NodePrefix,
     NodeReference,
     NodeString,
 )
@@ -29,6 +30,7 @@ PRECEDENCES = {
     "-": 3,
     "*": 4,
     "/": 4,
+    "PREFIX": 5,
 }
 
 
@@ -67,6 +69,10 @@ class Parser:
             node = NodeReference(row, col)
         elif self._cur_token.type_ == TokenType.LEFT_PAREN:
             node = self._parse_parenthesized_expression()
+        elif self._cur_token.type_ == TokenType.MINUS:
+            operator = self._cur_token.literal
+            self._next_token()
+            node = NodePrefix(operator, self._parse_expression(PRECEDENCES["PREFIX"]))
         else:
             node = NodeError()
         while (

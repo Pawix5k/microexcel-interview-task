@@ -69,3 +69,17 @@ class TestTokenizer(unittest.TestCase):
             )
             for expected_token in expected_tokens:
                 self.assertEqual(expected_token, tokenizer.next_token())
+
+        with self.subTest(i=3):
+            input_ = "-2*-3.4"
+            tokenizer = Tokenizer(input_)
+            expected_tokens = (
+                Token(TokenType.MINUS, "-"),
+                Token(TokenType.NUMBER, "2"),
+                Token(TokenType.ASTERISK, "*"),
+                Token(TokenType.MINUS, "-"),
+                Token(TokenType.NUMBER, "3.4"),
+                Token(TokenType.EOF),
+            )
+            for expected_token in expected_tokens:
+                self.assertEqual(expected_token, tokenizer.next_token())

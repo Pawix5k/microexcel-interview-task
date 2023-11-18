@@ -84,3 +84,11 @@ class TestTokenizer(unittest.TestCase):
             parser = Parser(input_)
             expected_tree = NodeInfix("+", NodeBoolean(True), NodeError())
             self.assertEqual(expected_tree, parser.parse_cell())
+
+        with self.subTest(i=10):
+            input_ = "-2*-3.4"
+            parser = Parser(input_)
+            expected_tree = NodeInfix(
+                "*", NodePrefix("-", NodeNumber(2)), NodePrefix("-", NodeNumber(3.4))
+            )
+            self.assertEqual(expected_tree, parser.parse_cell())
