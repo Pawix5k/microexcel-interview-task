@@ -131,7 +131,7 @@ class NodeFunction:
 
 class NodeEmpty(ImplementsToString, ImplementsToNumber, ImplementsToBoolean):
     def __str__(self) -> str:
-        return f"EMPTY"
+        return ""
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
