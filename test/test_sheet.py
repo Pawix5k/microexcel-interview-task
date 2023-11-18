@@ -16,8 +16,7 @@ class TestTokenizer(unittest.TestCase):
                 [NodeNumber(1), NodeNumber(2)],
                 [NodeNumber(3), NodeNumber(7)],
             ]
-            sheet.evaluate()
-            self.assertEqual(sheet._cells, expected)
+            self.assertEqual(sheet.evaluate(), expected)
 
         with self.subTest(i=1):
             input_ = [
@@ -29,5 +28,22 @@ class TestTokenizer(unittest.TestCase):
                 [NodeNumber(1), NodeNumber(0)],
                 [NodeError(), NodeError()],
             ]
-            sheet.evaluate()
-            self.assertEqual(sheet._cells, expected)
+            self.assertEqual(sheet.evaluate(), expected)
+
+        with self.subTest(i=2):
+            input_ = [
+                ["Hello", "World", "=CONCATENATE(A1;B1)"],
+                ["5", "3", '=IF(A2<B2 * B2; CONCATENATE("Foo"); 5/5)'],
+                ["1", "=A3=A2", "=A3<A2"],
+            ]
+            sheet = Sheet(input_)
+            expected = [
+                [
+                    NodeString("Hello"),
+                    NodeString("World"),
+                    NodeString("HelloWorld"),
+                ],
+                [NodeNumber(5), NodeNumber(3), NodeString("Foo")],
+                [NodeNumber(1), NodeBoolean(False), NodeBoolean(True)],
+            ]
+            self.assertEqual(sheet.evaluate(), expected)

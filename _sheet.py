@@ -148,13 +148,11 @@ class Sheet:
             except ValueError:
                 return NodeString(cell)
 
-    def get_strings(self):
-        return [[str(cell) for cell in row] for row in self._cells]
-
     def evaluate(self):
         for row in range(len(self._cells)):
             for col in range(len(self._cells[row])):
                 self._evaluate_cell(row, col)
+        return self._cells
 
     def _evaluate_cell(self, row, col, visited=set()):
         if not self._in_sheet(row, col):
