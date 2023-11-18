@@ -132,7 +132,7 @@ class Sheet:
 
     def _parse_cell(self, cell: str) -> Node:
         if cell.startswith("="):
-            node = Parser(cell[1:]).parse_cell()
+            node = Parser(cell[1:]).parse_formula()
             return node
         try:
             return NodeNumber(int(cell))

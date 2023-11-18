@@ -46,7 +46,7 @@ class Parser:
         self._cur_token = self._peek_token
         self._peek_token = self._tokenizer.next_token()
 
-    def parse_cell(self) -> Node:
+    def parse_formula(self) -> Node:
         if self._cur_token.type_ == TokenType.EOF:
             return NodeEmpty()
         node = self._parse_expression()
