@@ -2,7 +2,6 @@ import re
 from enum import Enum, auto
 
 REFERENCE_PATTERN = re.compile(r"[a-zA-Z]+[0-9]+")
-NUMBER_PATTERN = re.compile(r"[0-9]+(\.?[0-9]+)?")
 
 
 class TokenType(Enum):
@@ -124,6 +123,8 @@ def _is_reference(s: str) -> bool:
 
 
 def _is_number(s: str) -> bool:
-    if NUMBER_PATTERN.fullmatch(s):
-        return True
-    return False
+    try:
+        float(s)
+    except ValueError:
+        return False
+    return True
