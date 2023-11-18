@@ -1,4 +1,5 @@
 from _abstract_syntax_tree import (
+    Node,
     NodeBoolean,
     NodeEmpty,
     NodeError,
@@ -41,11 +42,11 @@ class Parser:
         self._cur_token = self._peek_token
         self._peek_token = self._tokenizer.next_token()
 
-    def _next_token(self):
+    def _next_token(self) -> None:
         self._cur_token = self._peek_token
         self._peek_token = self._tokenizer.next_token()
 
-    def parse_cell(self):
+    def parse_cell(self) -> Node:
         if self._cur_token.type_ == TokenType.EOF:
             return NodeEmpty()
         node = self._parse_expression()
@@ -53,7 +54,7 @@ class Parser:
             return NodeError()
         return node
 
-    def _parse_expression(self, precedence=PRECEDENCES["DEFAULT"]):
+    def _parse_expression(self, precedence: int = PRECEDENCES["DEFAULT"]) -> Node:
         if self._cur_token.type_ == TokenType.FUNCTION:
             node = self._parse_function()
         elif self._cur_token.type_ == TokenType.NUMBER:
@@ -85,7 +86,7 @@ class Parser:
             node.right = self._parse_expression(PRECEDENCES[node.operator])
         return node
 
-    def _parse_function(self):
+    def _parse_function(self) -> Node:
         if self._peek_token.type_ != TokenType.LEFT_PAREN:
             return NodeError()
         node = NodeFunction(self._cur_token.literal)
@@ -96,8 +97,8 @@ class Parser:
         self._next_token()
         return node
 
-    def _parse_function_arguments(self):
-        args = []
+    def _parse_function_arguments(self) -> list[Node]:
+        args: list[Node] = []
         if self._peek_token.type_ == TokenType.RIGHT_PAREN:
             return args
         self._next_token()
@@ -108,10 +109,10 @@ class Parser:
             args.append(self._parse_expression(PRECEDENCES["DEFAULT"]))
 
         if self._peek_token.type_ != TokenType.RIGHT_PAREN:
-            return NodeError()
+            return [NodeError()]
         return args
 
-    def _parse_parenthesized_expression(self):
+    def _parse_parenthesized_expression(self) -> Node:
         self._next_token()
         node = self._parse_expression(PRECEDENCES["DEFAULT"])
         if self._peek_token.type_ != TokenType.RIGHT_PAREN:

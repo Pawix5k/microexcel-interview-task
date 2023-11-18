@@ -5,7 +5,7 @@ from _sheet import Sheet
 
 
 class TestTokenizer(unittest.TestCase):
-    def test_evaluate(self):
+    def test_evaluate(self) -> None:
         with self.subTest(i=0):
             input_ = [
                 ["1", "2"],
@@ -13,8 +13,8 @@ class TestTokenizer(unittest.TestCase):
             ]
             sheet = Sheet(input_)
             expected = [
-                [NodeNumber(1), NodeNumber(2)],
-                [NodeNumber(3), NodeNumber(7)],
+                ["1", "2"],
+                ["3", "7"],
             ]
             self.assertEqual(sheet.evaluate(), expected)
 
@@ -25,8 +25,8 @@ class TestTokenizer(unittest.TestCase):
             ]
             sheet = Sheet(input_)
             expected = [
-                [NodeNumber(1), NodeNumber(0)],
-                [NodeError(), NodeError()],
+                ["1", "0"],
+                ["ERROR", "ERROR"],
             ]
             self.assertEqual(sheet.evaluate(), expected)
 
@@ -38,12 +38,8 @@ class TestTokenizer(unittest.TestCase):
             ]
             sheet = Sheet(input_)
             expected = [
-                [
-                    NodeString("Hello"),
-                    NodeString("World"),
-                    NodeString("HelloWorld"),
-                ],
-                [NodeNumber(5), NodeNumber(3), NodeString("Foo")],
-                [NodeNumber(1), NodeBoolean(False), NodeBoolean(True)],
+                ["Hello", "World", "HelloWorld"],
+                ["5", "3", "Foo"],
+                ["1", "FALSE", "TRUE"],
             ]
             self.assertEqual(sheet.evaluate(), expected)

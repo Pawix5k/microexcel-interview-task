@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class ImplementsToString(ABC):
@@ -17,7 +18,7 @@ class ImplementsToNumber(ABC):
 
 class ImplementsToBoolean(ABC):
     @abstractmethod
-    def to_string(self) -> bool:
+    def to_boolean(self) -> bool:
         raise NotImplementedError
 
 
@@ -31,7 +32,7 @@ class NodeString(ImplementsToString):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self.value}')"
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, NodeString):
             return self.value == other.value
         return False
@@ -50,7 +51,7 @@ class NodeNumber(ImplementsToString, ImplementsToNumber, ImplementsToBoolean):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.value})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, NodeNumber):
             return self.value == other.value
         return False
@@ -58,7 +59,7 @@ class NodeNumber(ImplementsToString, ImplementsToNumber, ImplementsToBoolean):
     def to_string(self) -> str:
         return str(self.value)
 
-    def to_number(self) -> int:
+    def to_number(self) -> int | float:
         return self.value
 
     def to_boolean(self) -> bool:
@@ -70,18 +71,18 @@ class NodeBoolean(ImplementsToString, ImplementsToNumber, ImplementsToBoolean):
         self.value = value
 
     def __str__(self) -> str:
-        return str(self.value)
+        return str(self.value).upper()
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.value})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, NodeBoolean):
             return self.value == other.value
         return False
 
     def to_string(self) -> str:
-        return str(self.value)
+        return str(self.value).upper()
 
     def to_number(self) -> int:
         return 1 if self.value else 0
@@ -101,7 +102,7 @@ class NodeReference:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.row}, {self.col})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, NodeReference):
             return (self.row, self.col) == (other.row, other.col)
         return False
@@ -120,7 +121,7 @@ class NodeFunction:
         args_repr = ", ".join(repr(arg) for arg in self.args)
         return f"{self.__class__.__name__}('{self.name}', [{args_repr}])"
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, NodeFunction) and len(self.args) == len(other.args):
             for own_arg, other_arg in zip(self.args, other.args):
                 if own_arg != other_arg:
@@ -136,7 +137,7 @@ class NodeEmpty(ImplementsToString, ImplementsToNumber, ImplementsToBoolean):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         return isinstance(other, NodeEmpty)
 
     def to_string(self) -> str:
@@ -160,7 +161,7 @@ class NodePrefix:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self.operator}', {repr(self.expression)})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, NodePrefix):
             return (
                 self.operator == other.operator and self.expression == other.expression
@@ -180,7 +181,7 @@ class NodeInfix:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self.operator}', {repr(self.left)}, {repr(self.right)})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, NodeInfix):
             return (
                 self.operator == other.operator
@@ -197,7 +198,7 @@ class NodeError:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         return isinstance(other, NodeError)
 
 

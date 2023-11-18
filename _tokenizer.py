@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import re
 from enum import Enum, auto
+from typing import Any
 
 REFERENCE_PATTERN = re.compile(r"[a-zA-Z]+[0-9]+")
 
@@ -30,12 +33,13 @@ class Token:
         self.type_ = type_
         self.literal = literal
 
-    def __eq__(self, other) -> bool:
-        if self.type_ == other.type_ and self.literal == other.literal:
-            return True
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, Token):
+            if self.type_ == other.type_ and self.literal == other.literal:
+                return True
         return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Token({self.type_}, "{self.literal}")'
 
 

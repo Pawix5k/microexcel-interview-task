@@ -5,11 +5,11 @@ from _parser import Parser
 
 
 class TestTokenizer(unittest.TestCase):
-    def test_parse_cell(self):
+    def test_parse_cell(self) -> None:
         with self.subTest(i=0):
             input_ = "1 + 2 * 3"
             parser = Parser(input_)
-            expected_tree = NodeInfix(
+            expected_tree: Node = NodeInfix(
                 "+", NodeNumber(1), NodeInfix("*", NodeNumber(2), NodeNumber(3))
             )
             self.assertEqual(expected_tree, parser.parse_cell())

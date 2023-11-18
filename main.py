@@ -1,11 +1,13 @@
 import argparse
 import csv
 import sys
+import typing
+from pathlib import Path
 
 from _sheet import Sheet
 
 
-def read_csv(path):
+def read_csv(path: Path) -> list[list[str]]:
     try:
         with open(path, "r") as f:
             reader = csv.reader(f)
@@ -20,7 +22,7 @@ def read_csv(path):
         sys.exit("Problem reading file")
 
 
-def write_csv(path, csv_data):
+def write_csv(path: Path, csv_data: list[list[str]]) -> None:
     try:
         with open(path, "w", newline="") as f:
             writer = csv.writer(f)
@@ -35,7 +37,7 @@ def write_csv(path, csv_data):
         sys.exit("Problem reading file")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         prog="MicroExcel",
         description="Evaluate .csv file like an Excel sheet.",
@@ -44,7 +46,8 @@ def main():
     parser.add_argument("input", help="input file path", type=str)
     parser.add_argument("output", help="output file path", type=str)
     args = parser.parse_args()
-    input_path, output_path = args.input, args.output
+    input_path = Path(args.input)
+    output_path = Path(args.output)
 
     csv_data = read_csv(input_path)
     sheet = Sheet(csv_data)
