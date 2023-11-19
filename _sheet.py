@@ -176,15 +176,21 @@ class Sheet:
         if isinstance(node, NodeReference):
             return self._evaluate_cell(node.row, node.col, visited)
         if isinstance(node, NodePrefix):
-            return PREFIX_HANDLERS[node.operator](
-                self._evaluate_node(node.expression, visited)
-            )
+            if node.operator in PREFIX_HANDLERS:
+                return PREFIX_HANDLERS[node.operator](
+                    self._evaluate_node(node.expression, visited)
+                )
+            return NodeError
         if isinstance(node, NodeInfix):
-            return INFIX_HANDLERS[node.operator](
-                self._evaluate_node(node.left, visited),
-                self._evaluate_node(node.right, visited),
-            )
+            if node.operator in INFIX_HANDLERS:
+                return INFIX_HANDLERS[node.operator](
+                    self._evaluate_node(node.left, visited),
+                    self._evaluate_node(node.right, visited),
+                )
+            return NodeError()
         if isinstance(node, NodeFunction):
-            return FUNCTION_HANDLERS[node.name](
-                [self._evaluate_node(arg, visited) for arg in node.args]
-            )
+            if node.name in FUNCTION_HANDLERS:
+                return FUNCTION_HANDLERS[node.name](
+                    [self._evaluate_node(arg, visited) for arg in node.args]
+                )
+            return NodeError()
